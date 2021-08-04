@@ -19,7 +19,7 @@
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
-	server_name _;
+	server_name lt-2021-090.ml www.lt-2021-090.ml;
 	return 301 https://$host$request_uri;
 }
 server{
@@ -28,7 +28,7 @@ server{
 	#
 	listen 443 ssl default_server;
 	listen [::]:443 ssl default_server;
-	server_name lt-2021-090.ml;
+	server_name lt-2021-090.ml www.lt-2021-090.ml;
 	ssl_certificate /etc/ssl/certs/lt-2021-090.crt;
 	ssl_certificate_key /etc/ssl/private/lt-2021-090.key;
 	#ssl_protocols TLSv1.2 TLSv1.3;
@@ -50,12 +50,15 @@ server{
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
 
-	#server_name _;
-
 	location / {
-		# First attempt to serve request as file, then
-		# as directory, then fall back to displaying a 404.
+		proxy_pass http://127.0.0.1:8081;
+	}
+	location /web0090 {
 		try_files $uri $uri/ =404;
+	}
+	location /secret {
+		auth_basic "Secret area";
+		auth_basic_user__file /etc/nginx/.htpasswd;
 	}
 
 	# pass PHP scripts to FastCGI server
